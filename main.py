@@ -38,8 +38,7 @@ def healthCheckApp():
 health.add_check(healthCheckApp)
 
 
-
-@app.route('/', methods= ['POST'])
+@app.route('/predict', methods= ['POST'])
 def predict():
 
     incoming_data = request.get_json()
@@ -58,9 +57,9 @@ def predict():
     return jsonify(predictions)
 
 
-if __name__ == '__main__':
-    app.run( debug = True, port = 9096)
-
 # if __name__ == '__main__':
-#     app.run( host = '0.0.0.0', port = 9096)
+#     app.run( debug = True, port = 9096)
+
+if __name__ == '__main__':
+    app.run( host = '0.0.0.0', port = 9096)
 
