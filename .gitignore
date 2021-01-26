@@ -1,0 +1,3 @@
+customer_service/
+model_files/__pycache__
+*.log
