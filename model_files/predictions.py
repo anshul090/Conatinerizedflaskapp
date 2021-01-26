@@ -9,11 +9,11 @@ import logging
 
 logging.basicConfig(filename = "repeat_customers_visit_process.log", level = logging.WARNING,
                     format = '%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-dateCols = config.DATE_COLS
-derivedCols = config.DERIVED_COLS
-constantImputation = config.CONSTANT_IMPUTATION
 
-# process datetime columns
+dateCols = config.DATE_COLS
+
+
+
 def preprocess_datetime(df, dateCols):
     '''
     Function to convert the variables with temporal information in raw data to datetime  datatype
@@ -44,6 +44,12 @@ def preprocess_string(df):
     return df
 
 class CustomAttrAdder(BaseEstimator, TransformerMixin):
+    """
+        Class to create derived columns (custom attributes) from the incoming data
+        which is fed as an input feature to the classifier model
+        Inherits the BaseEstimator and Transformixin class and define the transform method 
+        for our custom transformer
+    """
     def __init__(self, product_age_indays=True, ): # no *args or **kargs
         self.product_age_indays = product_age_indays
     
@@ -52,11 +58,29 @@ class CustomAttrAdder(BaseEstimator, TransformerMixin):
     
     @staticmethod
     def getIndex(df, dateCols):
+        """
+        Function to get index of columns used to create derived colums
+        Arguements: 
+            df : the incoming data
+            dateCols: the list of columns that are used in deriving custom columns
+        
+        Returns:
+                the index of all columns in df used in creating custom columns
+        """
         datecols_index =  {col : index for index, col in enumerate(df) if col in dateCols}
                 
         return datecols_index['mnfture_wk'], datecols_index['contract_st'], datecols_index['contract_end'] , datecols_index['contact_wk'] 
 
     def transform(self, data, X):
+        """
+        Function to create derived columns
+
+        Arguement: 
+            data: incoming data as a dataframe
+            X: the incoming data as numpy array
+
+        Returns: A dataframe object containing the derived columns
+        """
         mnfture_wk_ix, contract_st_ix, contract_end_ix, contact_wk_ix  = self.getIndex(data, dateCols)
         contract_age_indays = np.fromiter((d.days for d in (X[:,contact_wk_ix ] - X[:, contract_st_ix])), dtype=int, count=len((X[:,contact_wk_ix ] - X[:, contract_st_ix])))
         
@@ -66,12 +90,25 @@ class CustomAttrAdder(BaseEstimator, TransformerMixin):
         
         if self.product_age_indays:
             product_age_indays = np.fromiter((d.days for d in (X[:, contact_wk_ix] - X[:, mnfture_wk_ix])), dtype=int, count=len((X[:, contact_wk_ix] - X[:, mnfture_wk_ix])))
-            return pd.DataFrame(np.c_[ product_age_indays, contract_age_indays, contract_st_delay_indays, contract_remaining_indays, contract_length_indays], columns = derivedCols)
+            return pd.DataFrame(np.c_[ product_age_indays, contract_age_indays, contract_st_delay_indays, contract_remaining_indays, contract_length_indays], columns = config.DERIVED_COLS)
         
-        return pd.DataFrame(np.c_[contract_age_indays, contract_st_delay_indays, contract_remaining_indays, contract_length_indays], columns = derivedCols)
+        return pd.DataFrame(np.c_[contract_age_indays, contract_st_delay_indays, contract_remaining_indays, contract_length_indays], columns = config.DERIVED_COLS)
 
 
 def preprocess_data(data, dateCols):
+    """
+        Function to apply all transformations to the dataframe i.e. convert date related columns
+        to datetime, standardize strings, convert these columns from object type to category for 
+        faster processing and reduce memory usage and create derived columns from original elements
+        in the json request
+
+        Arguement: 
+            data : incoming data as dataframe
+            dateCols : a list of date columns
+
+        Returns: 
+            data: a dataframe object with all transofmations applied
+    """
     
     preprocess_datetime(data, dateCols)
     logging.warning("The datetime columns has been preprocessed fine")
@@ -90,6 +127,17 @@ def preprocess_data(data, dateCols):
 
 
 def predict_repeat_contact(inputs, model, features_transform_pipe):
+    """
+        Function to return the predictions and scoring  from a trained classifier 
+         after all feature engineering steps are applied from the saved pipeline 
+        of an incoming record
+
+        Arguement:
+            inputs : the incoming input data from the API
+            model : trained model object
+            features_transform_pipe : saved feature transformations pipeline
+
+    """
     hashmap = config.HASH_MAP
     if type(inputs)== dict:
         df = pd.DataFrame(inputs)
