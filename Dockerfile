@@ -12,7 +12,6 @@ RUN pip3 install --upgrade pip
 
 RUN pip3 --no-cache-dir install -r requirements.txt
 
-EXPOSE 9096
 
 
 # run the flask app when container starts 
