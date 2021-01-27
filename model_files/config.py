@@ -14,7 +14,6 @@ MODEL_PATH = "repeat_ct_model.joblib"
 HASH_MAP = {0: 'No Contact',
            1: 'Contact'}
 
+# columns not to read
 NOT_TO_READ = ["asst_id", "repeat_parts_sent"]
-# features_transform_pipe = joblib.load(features_object)
-# model = joblib.load(model_object)
 

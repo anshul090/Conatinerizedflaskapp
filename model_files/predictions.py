@@ -60,7 +60,7 @@ class CustomAttrAdder(BaseEstimator, TransformerMixin):
     def getIndex(df, dateCols):
         """
         Function to get index of columns used to create derived colums
-        Arguements: 
+        Arguments: 
             df : the incoming data
             dateCols: the list of columns that are used in deriving custom columns
         
@@ -75,7 +75,7 @@ class CustomAttrAdder(BaseEstimator, TransformerMixin):
         """
         Function to create derived columns
 
-        Arguement: 
+        Argument: 
             data: incoming data as a dataframe
             X: the incoming data as numpy array
 
@@ -102,7 +102,7 @@ def preprocess_data(data, dateCols):
         faster processing and reduce memory usage and create derived columns from original elements
         in the json request
 
-        Arguement: 
+        Argument: 
             data : incoming data as dataframe
             dateCols : a list of date columns
 
@@ -132,7 +132,7 @@ def predict_repeat_contact(inputs, model, features_transform_pipe):
          after all feature engineering steps are applied from the saved pipeline 
         of an incoming record
 
-        Arguement:
+        Argument:
             inputs : the incoming input data from the API
             model : trained model object
             features_transform_pipe : saved feature transformations pipeline

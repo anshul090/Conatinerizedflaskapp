@@ -5,4 +5,5 @@ README.md
 *.pyd
 *.log
 __pycache__
+training/
 

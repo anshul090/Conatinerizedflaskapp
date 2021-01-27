@@ -1,3 +1,12 @@
 customer_service/
 model_files/__pycache__
+training/__pycache__
 *.log
+training/*.log
+training/*.txt
+training/*.png
+training/*.joblib
+training/*predictions.csv
+
+
+

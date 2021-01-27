@@ -3,12 +3,23 @@ FROM python:3.8-slim
 
 # Copy Local code to container image
 ENV APP_HOME /app
+ENV PORT 9096
 WORKDIR $APP_HOME
 Copy . ./
 
 # Install Dependeicies
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip 
 
-# run the flask app on container start
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 repeat_contacts_gunicorn:app
+RUN pip3 --no-cache-dir install -r requirements.txt
+
+EXPOSE 9096
+
+
+# run the flask app when container starts 
+CMD python repeat_contacts_gunicorn.py
+
+
+# The below command starts the app with gunicorn multithreaded server on google cloud 
+# CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 repeat_contacts_gunicorn:app
+
 
